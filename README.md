@@ -18,6 +18,11 @@ overwrite the default `<c-o>` and `<c-i>` behavior with calls to `jumplist.jumpB
 
 ## Release Notes
 
+### 0.0.2
+
+- Fix various bugs
+- Remove leftover console log
+
 ### 0.0.1
 
-Initial build.
+- Initial build

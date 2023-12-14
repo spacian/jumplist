@@ -1,20 +1,27 @@
 import * as vscode from "vscode"
 import { JumpList } from "./jumplist"
-import { IJumpPoint } from "./interfaces"
+import { JumpPoint } from "./interfaces"
 
 class JumpHandler implements vscode.Disposable {
     private jumpList: JumpList = new JumpList()
 
     constructor() {}
 
-    public registerJump(context: vscode.ExtensionContext): void {
+    private getJumpPoint(context: vscode.ExtensionContext): JumpPoint | null {
         const editor = vscode.window.activeTextEditor
         if (editor) {
-            const jumpPoint: IJumpPoint = {
-                row : editor.selection.active.line,
-                col : editor.selection.active.character,
-                doc : editor.document,
-            };
+            const jumpPoint = new JumpPoint(
+                editor.selection.active.line,
+                editor.selection.active.character,
+                editor.document)
+            return jumpPoint
+        }
+        return null
+    }
+
+    public registerJump(context: vscode.ExtensionContext): void {
+        const jumpPoint = this.getJumpPoint(context)
+        if (jumpPoint != null){
             this.jumpList.registerJump(jumpPoint);
         }
         return
@@ -27,24 +34,27 @@ class JumpHandler implements vscode.Disposable {
     }
 
     public jumpBack(context: vscode.ExtensionContext): void {
-        const jumpPoint = this.jumpList.jumpBack()
+        const currentPoint = this.getJumpPoint(context)
+        const jumpPoint = this.jumpList.jumpBack(currentPoint)
         if (jumpPoint == null){ return }
         this.jumpTo(jumpPoint)
     }
 
     public dispose(): void {}
 
-    private async jumpTo(jump: IJumpPoint) {
-        await vscode.window.showTextDocument(jump.doc);
-        if (vscode.window.activeTextEditor
-            && vscode.window.activeTextEditor.document === jump.doc) {
+    private async jumpTo(jump: JumpPoint) {
+        if (jump.doc != null) {
+            await vscode.window.showTextDocument(jump.doc);
+            if (vscode.window.activeTextEditor
+                && vscode.window.activeTextEditor.document === jump.doc) {
 
-            const jumpPosition = new vscode.Position(jump.row, jump.col);
-            const selection = new vscode.Selection(jumpPosition, jumpPosition);
-            vscode.window.activeTextEditor.selection = selection;
-            vscode.window.activeTextEditor.revealRange(
-                selection, vscode.TextEditorRevealType.InCenter
-            );
+                const jumpPosition = new vscode.Position(jump.row, jump.col);
+                const selection = new vscode.Selection(jumpPosition, jumpPosition);
+                vscode.window.activeTextEditor.selection = selection;
+                vscode.window.activeTextEditor.revealRange(
+                    selection, vscode.TextEditorRevealType.InCenter
+                );
+            }
         }
     }
 }

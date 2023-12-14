@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import { registerJump, jumpForward, jumpBack } from "./JumpListHandler"
 
 export function activate(context: vscode.ExtensionContext) {
-	console.log('Congratulations, your extension "jumplist" is now active!');
     const registerJumpDisposable = vscode.commands.registerCommand(
         "jumplist.registerJump", () => {
             registerJump(context);
