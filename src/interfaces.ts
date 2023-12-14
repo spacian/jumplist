@@ -1,5 +1,7 @@
 import * as vscode from "vscode";
 
+export type NJumpPoint = JumpPoint | null
+
 export class JumpPoint {
     row: number;
     col: number;

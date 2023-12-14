@@ -1,4 +1,5 @@
-import { JumpPoint } from "./interfaces";
+import { JumpPoint, NJumpPoint } from "./interfaces";
+
 
 
 export class JumpList {
@@ -10,50 +11,102 @@ export class JumpList {
         this.max = max
     }
 
-    private getJumpPoint(): JumpPoint | null {
-        if (this.jumpList.length == 0) {
+    private valid(): boolean {
+        return this.getLength() > 0
+    }
+
+    private pop(): void {
+        this.jumpList.pop()
+        return
+    }
+
+    private popleft(): void {
+        this.jumpList.shift()
+        return
+    }
+
+    private push(jumpPoint: JumpPoint): void {
+        this.jumpList.push(jumpPoint)
+        this.id += 1
+    }
+
+    private getLength(): number {
+        return this.jumpList.length
+    }
+
+    private hasNext(): boolean {
+        return this.id < this.getLength() - 1
+    }
+
+    private hasPrevious(): boolean {
+        return this.id > 0
+    }
+
+    private goToNext(): void{
+        if (this.hasNext()) {
+            this.id += 1;
+        }
+        return
+    }
+
+    private goToPrevious(): void {
+        if (this.hasPrevious()) {
+            this.id -= 1
+        }
+        return
+    }
+    private deleteAfterCurrent(): void {
+        while (this.getLength() - 1 > this.id){
+            this.pop();
+        }
+        return
+    }
+
+    private limitSize(): void {
+        while (this.getLength() > this.max) {
+            this.id -= 1;
+            this.popleft();
+        }
+        return
+    }
+
+    private getNJumpPoint(): NJumpPoint {
+        if (this.getLength() == 0) {
             return null
         }
         return this.jumpList[this.id]
     }
 
-    public registerJump(jump: JumpPoint): void {
-        if (jump.equals(this.getJumpPoint())) {
-            this.jumpList[this.id].col = jump.col
+    private getJumpPoint(): JumpPoint {
+        return this.jumpList[this.id]
+    }
+
+    public registerJump(jump: NJumpPoint): void {
+        if (jump == null) { return }
+        if (jump.equals(this.getNJumpPoint())) {
+            this.getJumpPoint().col = jump.col
             return
         }
-        while (this.jumpList.length - 1 > this.id){
-            this.jumpList.pop();
-        }
-        this.jumpList.push(jump)
-        this.id += 1;
-        while (this.jumpList.length > this.max) {
-            this.id -= 1;
-            this.jumpList.shift();
-        }
+        this.deleteAfterCurrent()
+        this.push(jump)
+        this.limitSize()
         return
     }
 
-    public jumpForward(): JumpPoint | null {
-        if (this.jumpList.length == 0) {
+    public jumpForward(): NJumpPoint {
+        if (!this.valid()) {
             return null;
         }
-        if (this.id < this.jumpList.length - 1) {
-            this.id += 1;
-        }
-        return this.jumpList[this.id];
+        this.goToNext()
+        return this.getNJumpPoint();
     }
 
-    public jumpBack(jumpPoint: JumpPoint | null): JumpPoint | null {
-        if (this.jumpList.length == 0) {
+    public jumpBack(jumpPoint: NJumpPoint): NJumpPoint {
+        if (!this.valid()) {
             return null;
         }
-        if (jumpPoint != null) {
-            this.registerJump(jumpPoint)
-        }
-        if (this.id > 0) {
-            this.id -= 1;
-        }
-        return this.jumpList[this.id];
+        this.registerJump(jumpPoint)
+        this.goToPrevious()
+        return this.getNJumpPoint();
     }
 }
