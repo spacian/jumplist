@@ -14,8 +14,16 @@
   "contributes": {
     "commands": [
       {
-        "command": "jumplist.helloWorld",
-        "title": "Hello World"
+        "command": "jumplist.registerJump",
+        "title": "Register jump in jump list"
+      },
+      {
+        "command": "jumplist.jumpForward",
+        "title": "Jump forward in jump list"
+      },
+      {
+        "command": "jumplist.jumpBack",
+        "title": "Jump back in jump list"
       }
     ]
   },
