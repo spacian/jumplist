@@ -18,7 +18,10 @@ export class JumpList {
     }
 
     public registerJump(jump: JumpPoint): void {
-        if (jump.equals(this.getJumpPoint())) {return}
+        if (jump.equals(this.getJumpPoint())) {
+            this.jumpList[this.id].col = jump.col
+            return
+        }
         while (this.jumpList.length - 1 > this.id){
             this.jumpList.pop();
         }
