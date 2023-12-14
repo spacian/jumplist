@@ -1,6 +1,7 @@
 {
   "name": "jumplist",
   "displayName": "jumplist",
+  "repository": {"url": "https://github.com/spacian/jumplist"},
   "description": "",
   "version": "0.0.1",
   "engines": {
