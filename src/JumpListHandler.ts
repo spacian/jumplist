@@ -1,46 +1,131 @@
 import * as vscode from "vscode"
 import { JumpList } from "./jumplist"
-import { JumpPoint } from "./interfaces"
+import { JumpPoint, NJumpPoint } from "./interfaces"
 
 class JumpHandler implements vscode.Disposable {
-    private jumpList: JumpList = new JumpList()
+    private jumpList: JumpList = new JumpList();
+    private textEditorChangeListener: vscode.Disposable | null = null;
 
-    constructor() {}
+    constructor() {
+        this.textEditorChangeListener = vscode.workspace.onDidChangeTextDocument((e) => {
+                this.updateJumps(e);
+            }
+        )
+    }
 
-    private getJumpPoint(context: vscode.ExtensionContext): JumpPoint | null {
-        const editor = vscode.window.activeTextEditor
+    private updateJumps(changeEvent: vscode.TextDocumentChangeEvent): void {
+        for (const jump of this.jumpList.entries()) {
+            if (jump.doc === changeEvent.document) {
+                for (const change of changeEvent.contentChanges) {
+                    this.updateJump(jump, change);
+                }
+            }
+        }
+        return;
+    }
+
+    private updateJumpWithChangeAtLine(
+            jump: JumpPoint,
+            changeEvent: vscode.TextDocumentContentChangeEvent,
+            ): void {
+        const range = changeEvent.range;
+        const lines = changeEvent.text.split("\n");
+        const multiline = lines.length > 1;
+        if (multiline) {
+            jump.row = range.start.line + lines.length - 1;
+            jump.col = range.end.character + lines[lines.length - 1].length;
+        } else {
+            jump.row = range.start.line;
+            jump.col = range.start.character + lines[lines.length - 1].length;
+        }
+        return;
+    }
+
+    private updateJumpWithChangeBeforeLine(
+            jump: JumpPoint,
+            event: vscode.TextDocumentContentChangeEvent,
+            ): void {
+        const range = event.range;
+        const lines = event.text.split("\n");
+        const multiline = lines.length > 1;
+        if (range.end.line === jump.row) {
+            const lastLine = lines[lines.length - 1];
+            if (multiline) {
+                jump.col += lastLine.length - range.end.character;
+            } else {
+                jump.col += lastLine.length - (range.end.character - range.start.character);
+            }
+        }
+        jump.row += lines.length - (range.end.line - range.start.line) - 1;
+        return;
+    }
+
+    private updateJump(
+            jump: JumpPoint,
+            event: vscode.TextDocumentContentChangeEvent,
+            ): void {
+        const rel = this.getJumpRelativity(jump, event.range);
+        if (rel === 0) {
+            this.updateJumpWithChangeAtLine(jump, event);
+        } else if (rel === 1) {
+            this.updateJumpWithChangeBeforeLine(jump, event);
+        }
+        return;
+    }
+
+    private getJumpRelativity(jump: JumpPoint, range: vscode.Range): number {
+        if (jump.row > range.end.line) { return 1; }
+        if (jump.row < range.start.line) { return -1; }
+
+        if (jump.row === range.end.line) {
+            if (jump.col < range.start.character) { return -1; }
+            if (jump.col >= range.end.character) { return 1; }
+        }
+        return 0;
+    }
+
+
+    private getJumpPoint(context: vscode.ExtensionContext): NJumpPoint {
+        const editor = vscode.window.activeTextEditor;
         if (editor) {
             const jumpPoint = new JumpPoint(
                 editor.selection.active.line,
                 editor.selection.active.character,
-                editor.document)
-            return jumpPoint
+                editor.document);
+            return jumpPoint;
         }
-        return null
+        return null;
     }
 
     public registerJump(context: vscode.ExtensionContext): void {
-        const jumpPoint = this.getJumpPoint(context)
+        const jumpPoint = this.getJumpPoint(context);
         if (jumpPoint != null){
             this.jumpList.registerJump(jumpPoint);
         }
-        return
+        return;
     }
 
     public jumpForward(context: vscode.ExtensionContext): void {
-        const jumpPoint = this.jumpList.jumpForward()
-        if (jumpPoint == null){ return }
-        this.jumpTo(jumpPoint)
+        const jumpPoint = this.jumpList.jumpForward();
+        if (jumpPoint == null){ return; }
+        this.jumpTo(jumpPoint);
+        return;
     }
 
     public jumpBack(context: vscode.ExtensionContext): void {
-        const currentPoint = this.getJumpPoint(context)
-        const jumpPoint = this.jumpList.jumpBack(currentPoint)
-        if (jumpPoint == null){ return }
-        this.jumpTo(jumpPoint)
+        const currentPoint = this.getJumpPoint(context);
+        const jumpPoint = this.jumpList.jumpBack(currentPoint);
+        if (jumpPoint == null){ return; }
+        this.jumpTo(jumpPoint);
     }
 
-    public dispose(): void {}
+    public dispose(): void {
+        if (this.textEditorChangeListener) {
+            this.textEditorChangeListener.dispose();
+            this.textEditorChangeListener = null;
+        }
+        return
+    }
 
     private async jumpTo(jump: JumpPoint) {
         if (jump.doc != null) {
@@ -69,16 +154,16 @@ function getJumpHandler(context: vscode.ExtensionContext): JumpHandler {
 }
 
 export function registerJump(context: vscode.ExtensionContext) {
-    const handler = getJumpHandler(context)
-    handler.registerJump(context)
+    const handler = getJumpHandler(context);
+    handler.registerJump(context);
 };
 
 export function jumpForward(context: vscode.ExtensionContext) {
-    const handler = getJumpHandler(context)
-    handler.jumpForward(context)
+    const handler = getJumpHandler(context);
+    handler.jumpForward(context);
 };
 
 export function jumpBack(context: vscode.ExtensionContext) {
-    const handler = getJumpHandler(context)
-    handler.jumpBack(context)
+    const handler = getJumpHandler(context);
+    handler.jumpBack(context);
 };
