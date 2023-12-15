@@ -18,6 +18,10 @@ overwrite the default `<c-o>` and `<c-i>` behavior with calls to `jumplist.jumpB
 
 ## Release Notes
 
+### 0.0.4
+
+- Use linked list instead of array to store jump points
+
 ### 0.0.3
 
 - Update jumplist as files change
