@@ -1,6 +1,6 @@
 import * as vscode from "vscode"
 import { JumpList } from "./jumplist"
-import { JumpPoint, NJumpPoint } from "./interfaces"
+import { JumpPoint, JumpPointBaseNode, NJumpPoint } from "./interfaces"
 
 class JumpHandler implements vscode.Disposable {
     private jumpList: JumpList = new JumpList();
@@ -14,7 +14,10 @@ class JumpHandler implements vscode.Disposable {
     }
 
     private updateJumps(changeEvent: vscode.TextDocumentChangeEvent): void {
-        for (const jump of this.jumpList.entries()) {
+        let node = this.jumpList.getRoot() as JumpPointBaseNode
+        while (node.hasNext()) {
+            node = node.next as JumpPointBaseNode
+            const jump = node.val as JumpPoint
             if (jump.doc === changeEvent.document) {
                 for (const change of changeEvent.contentChanges) {
                     this.updateJump(jump, change);

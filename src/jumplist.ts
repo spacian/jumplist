@@ -1,70 +1,74 @@
-import { JumpPoint, NJumpPoint } from "./interfaces";
+import { JumpPoint, NJumpPoint, JumpPointBaseNode, JumpPointRoot, JumpPointNode } from "./interfaces";
 
 
 
 export class JumpList {
-    private jumpList: JumpPoint[] = [];
-    private id: number = -1;
-    private max: number = -1;
+    private node: JumpPointBaseNode;
+    private root: JumpPointRoot;
+    private len: number = 0;
+    private max: number = 0;
 
     constructor(max: number = 100) {
         this.max = max;
+        this.root = new JumpPointRoot();
+        this.node = this.root;
+        return;
     }
 
     private valid(): boolean {
         return this.getLength() > 0;
     }
 
-    private pop(): void {
-        this.jumpList.pop();
-        return;
-    }
-
     private popleft(): void {
-        this.jumpList.shift();
-        return;
+        if (this.root.hasNext()) {
+            this.root.next = this.root.next!.next
+        }
     }
-
     private push(jumpPoint: JumpPoint): void {
-        this.jumpList.push(jumpPoint);
-        this.id += 1;
+        this.getJumpPointNode().next =
+            new JumpPointNode(jumpPoint, this.getJumpPointNode());
+        this.len += 1
+        this.goToNext();
     }
 
     private getLength(): number {
-        return this.jumpList.length;
+        return this.len;
     }
 
     private hasNext(): boolean {
-        return this.id < this.getLength() - 1;
+        return this.node.next != null;
     }
 
     private hasPrevious(): boolean {
-        return this.id > 0;
+        return this.node.prev != null && this.node.prev != this.root;
     }
 
     private goToNext(): void{
         if (this.hasNext()) {
-            this.id += 1;
+            this.node = this.node.next as JumpPointNode
         }
         return;
     }
 
     private goToPrevious(): void {
         if (this.hasPrevious()) {
-            this.id -= 1;
+            this.node = this.node.prev as JumpPointNode;
         }
         return;
     }
     private deleteAfterCurrent(): void {
-        while (this.getLength() - 1 > this.id){
-            this.pop();
+        let next = this.getJumpPointNode().next;
+        while (next != null){
+            this.len -= 1
+            next = next.next
         }
+        this.getJumpPointNode().disconnectNext()
         return;
     }
 
     private limitSize(): void {
         while (this.getLength() > this.max) {
-            this.id -= 1;
+            this.len -= 1;
             this.popleft();
         }
         return;
@@ -74,17 +78,22 @@ export class JumpList {
         if (this.getLength() == 0) {
             return null;
         }
-        return this.jumpList[this.id];
+        return this.node.val;
     }
 
     private getJumpPoint(): JumpPoint {
-        return this.jumpList[this.id];
+        return this.node.val as JumpPoint;
+    }
+
+    private getJumpPointNode(): JumpPointNode {
+        return this.node;
     }
 
     public registerJump(jump: NJumpPoint): void {
         if (jump == null) { return; }
         if (jump.equals(this.getNJumpPoint())) {
             this.getJumpPoint().col = jump.col;
+            this.getJumpPoint().row = jump.row;
             return
         }
         this.deleteAfterCurrent();
@@ -110,8 +119,8 @@ export class JumpList {
         return this.getNJumpPoint();
     }
 
-    public entries(): JumpPoint[] {
-        return this.jumpList;
+    public getRoot(): JumpPointRoot {
+        return this.root;
     }
 
 }
