@@ -1,7 +1,7 @@
-import * as vscode from 'vscode'
-import { JumpList } from './jumplist'
-import { JumpPoint, NJumpPoint } from './jumppoint'
-import { JumpListUpdater } from './jumplistupdater'
+import * as vscode from 'vscode';
+import { JumpList } from './jumplist';
+import { JumpPoint, NJumpPoint } from './jumppoint';
+import { JumpListUpdater } from './jumplistupdater';
 
 
 class JumpHandler implements vscode.Disposable {
@@ -56,7 +56,7 @@ class JumpHandler implements vscode.Disposable {
             this.textEditorChangeListener.dispose();
             this.textEditorChangeListener = null;
         }
-        return
+        return;
     }
 
     private jumpTo(jump: JumpPoint) {

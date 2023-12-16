@@ -34,14 +34,14 @@ class JumpPointBaseNode {
     public disconnectNext(): void {
         this.next = null;
     }
-};
+}
 
 export class JumpPointNode extends JumpPointBaseNode {
     public constructor(val: JumpPoint, prev: JumpPointNode) {
         super(val, prev);
         return;
     }
-};
+}
 
 export class JumpPointRoot extends JumpPointBaseNode {
     public constructor() {
@@ -68,4 +68,4 @@ export class JumpPoint {
             && this.doc.fileName == other.doc.fileName
         );
     }
-};
+}

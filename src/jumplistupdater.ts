@@ -1,6 +1,6 @@
-import * as vscode from 'vscode'
-import { JumpPoint, JumpPointNode } from './jumppoint'
-import { JumpList } from './jumplist'
+import * as vscode from 'vscode';
+import { JumpPoint } from './jumppoint';
+import { JumpList } from './jumplist';
 
 
 export class JumpListUpdater {
@@ -9,10 +9,10 @@ export class JumpListUpdater {
         jumpList: JumpList,
         changeEvent: vscode.TextDocumentChangeEvent
     ): void {
-        let node = jumpList.getRoot() as JumpPointNode
+        let node = jumpList.getRoot();
         while (node.hasNext()) {
-            node = node.next!
-            const jump = node.val!
+            node = node.next!;
+            const jump = node.val!;
             if (jump.doc === changeEvent.document) {
                 for (const change of changeEvent.contentChanges) {
                     JumpListUpdater.updateJump(jump, change);

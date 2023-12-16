@@ -120,7 +120,7 @@ export class JumpList {
     }
 
     public jumpBack(jump: NJumpPoint): NJumpPoint {
-        this.registerJump(jump)
+        this.registerJump(jump);
         this.goToPrevious();
         return this.getNJumpPoint();
     }
@@ -128,5 +128,4 @@ export class JumpList {
     public getRoot(): JumpPointRoot {
         return this.root;
     }
-
 }
