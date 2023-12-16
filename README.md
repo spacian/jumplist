@@ -69,6 +69,11 @@ Happy jumping!
 
 ## Release Notes
 
+### 0.0.5
+
+- Fix bug that lead to jump points not being removed properly
+- Add configuration options `jumplist.maxJumpPoints` and `jumplist.combineLineCount`
+
 ### 0.0.4
 
 - Use linked list instead of array to store jump points
