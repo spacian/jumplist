@@ -21,7 +21,10 @@ export class JumpList {
 
     private popleft(): void {
         if (this.root.hasNext()) {
-            this.root.next = this.root.next!.next
+            let next = this.root.next as JumpPointNode
+            next.prev = null
+            this.root.next = next.next
+            this.len -= 1
         }
     }
     private push(jumpPoint: JumpPoint): void {
@@ -68,7 +71,6 @@ export class JumpList {
 
     private limitSize(): void {
         while (this.getLength() > this.max) {
-            this.len -= 1;
             this.popleft();
         }
         return;

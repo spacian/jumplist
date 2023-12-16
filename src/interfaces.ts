@@ -49,6 +49,7 @@ export class JumpPointRoot extends JumpPointBaseNode {
 }
 
 export class JumpPoint {
+    private static combineLineCount: number = vscode.workspace.getConfiguration('jumplist').get('combineLineCount') as number;
     row: number;
     col: number;
     doc: vscode.TextDocument;
@@ -62,7 +63,7 @@ export class JumpPoint {
     public equals(other: JumpPoint | null): boolean {
         return (
             other != null
-            && Math.abs(this.row - other.row) < 3
+            && Math.abs(this.row - other.row) <= JumpPoint.combineLineCount
             && this.doc.fileName == other.doc.fileName
         );
     }

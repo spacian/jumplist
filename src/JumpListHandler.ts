@@ -3,7 +3,8 @@ import { JumpList } from "./jumplist"
 import { JumpPoint, JumpPointBaseNode, NJumpPoint } from "./interfaces"
 
 class JumpHandler implements vscode.Disposable {
-    private jumpList: JumpList = new JumpList();
+    private static max_size: number = vscode.workspace.getConfiguration('jumplist').get('maximumJumpPoints') as number
+    private jumpList: JumpList = new JumpList(JumpHandler.max_size);
     private textEditorChangeListener: vscode.Disposable | null = null;
 
     constructor() {

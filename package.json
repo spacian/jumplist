@@ -3,7 +3,7 @@
   "displayName": "jumplist",
   "description": "Quickly jump from one point to another, imitating the neovim jump list.",
   "publisher": "spacian",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -26,7 +26,25 @@
         "command": "jumplist.jumpBack",
         "title": "Jump back in jump list"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "jumplist",
+      "properties": {
+        "jumplist.combineLineCount": {
+          "type": "number",
+          "default": 3,
+          "scope": "resource",
+          "description": "The last jump point is only updated when a new one is registered within this number of lines.\n(Requires reload)"
+        },
+        "jumplist.maximumJumpPoints": {
+          "type": "number",
+          "default": 100,
+          "scope": "resource",
+          "description": "Maximum number of jump points stored.\n(Requires reload)",
+          "": ""
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
