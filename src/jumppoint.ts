@@ -1,16 +1,17 @@
 import * as vscode from "vscode";
 
-export type NJumpPoint = JumpPoint | null
+export type NJumpPoint = JumpPoint | null;
+type NJumpPointNode = JumpPointNode | null;
 
-export class JumpPointBaseNode {
-    prev: JumpPointNode | null = null;
-    next: JumpPointNode | null = null;
+class JumpPointBaseNode {
+    prev: NJumpPointNode = null;
+    next: NJumpPointNode = null;
     val: NJumpPoint = null;
 
     public constructor(
         val?: JumpPoint,
-        prev?: JumpPointNode | null,
-        next?:JumpPointNode | null,
+        prev?: NJumpPointNode,
+        next?: NJumpPointNode,
     ) {
         if (val != undefined) {this.val = val;}
         if (prev != undefined) {this.prev = prev;}
@@ -27,20 +28,20 @@ export class JumpPointBaseNode {
     }
 
     public hasNext(): boolean {
-        return this.next != null
+        return this.next != null;
     }
 
     public disconnectNext(): void {
         this.next = null;
     }
-}
+};
 
 export class JumpPointNode extends JumpPointBaseNode {
     public constructor(val: JumpPoint, prev: JumpPointNode) {
         super(val, prev);
         return;
     }
-}
+};
 
 export class JumpPointRoot extends JumpPointBaseNode {
     public constructor() {
@@ -67,4 +68,4 @@ export class JumpPoint {
             && this.doc.fileName == other.doc.fileName
         );
     }
-}
+};

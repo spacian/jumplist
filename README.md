@@ -71,8 +71,9 @@ Happy jumping!
 
 ### 0.0.5
 
-- Fix bug that lead to jump points not being removed properly
 - Add configuration options `jumplist.maxJumpPoints` and `jumplist.combineLineCount`
+- Fix bug that lead to jump points not being removed properly
+
 
 ### 0.0.4
 

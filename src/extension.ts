@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { registerJump, jumpForward, jumpBack } from "./JumpListHandler"
+import { registerJump, jumpForward, jumpBack } from './jumplisthandler'
 
 export function activate(context: vscode.ExtensionContext) {
     const registerJumpDisposable = vscode.commands.registerCommand(
