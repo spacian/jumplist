@@ -37,8 +37,8 @@ class JumpPointBaseNode {
 }
 
 export class JumpPointNode extends JumpPointBaseNode {
-    public constructor(val: JumpPoint, prev: JumpPointNode) {
-        super(val, prev);
+    public constructor(val: JumpPoint, prev: JumpPointNode, next: NJumpPointNode = null) {
+        super(val, prev, next);
         return;
     }
 }

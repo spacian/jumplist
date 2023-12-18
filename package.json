@@ -3,7 +3,7 @@
   "displayName": "jumplist",
   "description": "Quickly jump from one point to another, imitating the neovim jump list.",
   "publisher": "spacian",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -40,8 +40,13 @@
           "type": "number",
           "default": 100,
           "scope": "resource",
-          "description": "Maximum number of jump points stored.\n(Requires reload)",
-          "": ""
+          "description": "Maximum number of jump points stored.\n(Requires reload)"
+        },
+        "jumplist.insertJumpPointOnForwardJump": {
+          "type": "boolean",
+          "default": true,
+          "scope": "resource",
+          "description": "Insert a new jump point at the current location when jumping forward.\n(Requires reload)"
         }
       }
     }

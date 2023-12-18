@@ -69,6 +69,10 @@ Happy jumping!
 
 ## Release Notes
 
+### 0.0.6
+
+- Add configuration option `jumplist.insertJumpPointOnForwardJump`
+
 ### 0.0.5
 
 - Add configuration options `jumplist.maxJumpPoints` and `jumplist.combineLineCount`

@@ -5,11 +5,20 @@ import { JumpListUpdater } from './jumplistupdater';
 
 
 class JumpHandler implements vscode.Disposable {
-    private static max_size: number = vscode.workspace.getConfiguration('jumplist').get('maximumJumpPoints') as number;
-    private jumpList: JumpList = new JumpList(JumpHandler.max_size);
+    private jumpList: JumpList;
     private textEditorChangeListener: vscode.Disposable | null = null;
 
     constructor() {
+        const maxSize: number =
+                                vscode.workspace
+                                .getConfiguration('jumplist')
+                                .get('maximumJumpPoints') as number;
+        const insertOnJumpForward: boolean =
+                                vscode.workspace
+                                .getConfiguration('jumplist')
+                                .get('insertJumpPointOnForwardJump') as boolean;
+        this.jumpList = new JumpList(maxSize, insertOnJumpForward)
+
         this.textEditorChangeListener = vscode.workspace.onDidChangeTextDocument((e) => {
                 JumpListUpdater.updateJumps(this.jumpList, e);
             }

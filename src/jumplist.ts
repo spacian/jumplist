@@ -4,17 +4,19 @@ import { JumpPoint, NJumpPoint, JumpPointRoot, JumpPointNode } from './jumppoint
 export class JumpList {
     private root: JumpPointRoot;
     private node: JumpPointNode;
+    private max: number;
+    private insertJumpOnForward: boolean;
     private len: number = 0;
-    private max: number = 0;
 
-    constructor(max: number) {
+    constructor(max: number, insertJumpOnForward: boolean) {
         this.max = max;
         this.root = new JumpPointRoot();
         this.node = this.root;
+        this.insertJumpOnForward = insertJumpOnForward
         return;
     }
 
-    private popleft(): void {
+    private popLeft(): void {
         if (this.root.hasNext()) {
             const next = this.root.next as JumpPointNode;
             next.prev = null;
@@ -23,9 +25,13 @@ export class JumpList {
         }
     }
 
-    private push(jumpPoint: JumpPoint): void {
+    private insertAfterCurrent(jumpPoint: JumpPoint): void {
+        const next = this.getJumpPointNode().next
         this.getJumpPointNode().next =
-            new JumpPointNode(jumpPoint, this.getJumpPointNode());
+            new JumpPointNode(jumpPoint, this.getJumpPointNode(), next);
+        if (next != null) {
+            next.prev = this.getJumpPointNode().next
+        }
         this.len += 1;
         this.goToNext();
     }
@@ -68,7 +74,7 @@ export class JumpList {
 
     private limitSize(): void {
         while (this.getLength() > this.max) {
-            this.popleft();
+            this.popLeft();
         }
         return;
     }
@@ -85,8 +91,7 @@ export class JumpList {
         return this.node;
     }
 
-    private amendJump(jump: NJumpPoint): boolean {
-        if (jump == null) {return true;}
+    private amendJump(jump: JumpPoint): boolean {
         if (jump.equals(this.getNJumpPoint())) {
             this.getJumpPoint().col = jump.col;
             this.getJumpPoint().row = jump.row;
@@ -95,26 +100,32 @@ export class JumpList {
         return false;
     }
 
+    private internalRegisterJump(jump: NJumpPoint): void {
+        if (jump == null) {return;}
+        if (jump.equals(this.getJumpPoint())) {
+            this.goToPrevious();
+        }
+        this.deleteAfterCurrent();
+        this.insertAfterCurrent(jump);
+        this.limitSize();
+        return;
+    }
+
     public registerJump(jump: NJumpPoint): void {
+        if (jump == null) {return;}
         if (!this.amendJump(jump)) {
             this.internalRegisterJump(jump);
         }
         return;
     }
 
-    public internalRegisterJump(jump: NJumpPoint): void {
-        if (jump == null) {return;}
-        if (jump.equals(this.getJumpPoint())) {
-            this.goToPrevious();
-        }
-        this.deleteAfterCurrent();
-        this.push(jump);
-        this.limitSize();
-        return;
-    }
-
     public jumpForward(jump: NJumpPoint): NJumpPoint {
-        this.amendJump(jump);
+        if (jump != null) {
+            const didAmend = this.amendJump(jump)
+            if (!didAmend && this.insertJumpOnForward){
+                this.insertAfterCurrent(jump)
+            }
+        }
         this.goToNext();
         return this.getNJumpPoint();
     }
