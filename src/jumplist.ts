@@ -102,8 +102,7 @@ export class JumpList {
         return false;
     }
 
-    private internalRegisterJump(jump: NJumpPoint): void {
-        if (jump == null) {return;}
+    private internalRegisterJump(jump: JumpPoint): void {
         if (jump.equals(this.getJumpPoint())) {
             this.goToPrevious();
         }
@@ -113,8 +112,7 @@ export class JumpList {
         return;
     }
 
-    public registerJump(jump: NJumpPoint): void {
-        if (jump == null) {return;}
+    public registerOrAmendJump(jump: JumpPoint): void {
         const didAmend = this.amendJump(jump);
         if (!didAmend) {
             this.internalRegisterJump(jump);
@@ -122,25 +120,32 @@ export class JumpList {
         return;
     }
 
-    public jumpForward(jump: NJumpPoint): NJumpPoint {
+    public jumpForward(jump: JumpPoint): NJumpPoint {
         if (!this.hasNext()) {
             return null;
         }
-        if (jump != null) {
-            const didAmend = this.amendJump(jump)
-            if (!didAmend && this.insertJumpOnForward){
-                this.insertAfterCurrent(jump);
-            }
+        const didAmend = this.amendJump(jump)
+        if (!didAmend && this.insertJumpOnForward){
+            this.insertAfterCurrent(jump);
         }
         this.goToNext();
         return this.getNJumpPoint();
     }
 
-    public jumpBack(jump: NJumpPoint): NJumpPoint {
-        if (jump != null && jump.equals(this.getNJumpPoint()) && !this.hasNext()) {
+    public jumpBack(jump: JumpPoint): NJumpPoint {
+        if (jump.equalsStrict(this.getNJumpPoint())){
+            this.goToPrevious();
             return this.getNJumpPoint();
         }
-        this.registerJump(jump);
+        else if (jump.equals(this.getNJumpPoint())){
+            return this.getNJumpPoint();
+        }
+        else if (!this.hasNext()){
+            this.insertAfterCurrent(jump);
+        }
+        else {
+            this.internalRegisterJump(jump);
+        }
         this.goToPrevious();
         return this.getNJumpPoint();
     }
