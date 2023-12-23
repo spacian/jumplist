@@ -140,12 +140,7 @@ export class JumpList {
         else if (jump.equals(this.getNJumpPoint())){
             return this.getNJumpPoint();
         }
-        else if (!this.hasNext()){
-            this.insertAfterCurrent(jump);
-        }
-        else {
-            this.internalRegisterJump(jump);
-        }
+        this.internalRegisterJump(jump);
         this.goToPrevious();
         return this.getNJumpPoint();
     }
