@@ -123,6 +123,9 @@ export class JumpList {
     }
 
     public jumpForward(jump: NJumpPoint): NJumpPoint {
+        if (!this.hasNext()) {
+            return null;
+        }
         if (jump != null) {
             const didAmend = this.amendJump(jump)
             if (!didAmend && this.insertJumpOnForward){
@@ -134,6 +137,9 @@ export class JumpList {
     }
 
     public jumpBack(jump: NJumpPoint): NJumpPoint {
+        if (jump != null && jump.equals(this.getNJumpPoint()) && !this.hasNext()) {
+            return this.getNJumpPoint();
+        }
         this.registerJump(jump);
         this.goToPrevious();
         return this.getNJumpPoint();
