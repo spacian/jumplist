@@ -49,10 +49,19 @@ Now you can wrap any key you want to register in the jump list like this:
 ```lua
 require('vscode_utils')
 
-vim.keymap.set({'n'}, 'i',
+-- register a jump after insert mode is left
+vim.keymap.set({'i'}, '<escape>',
+    function()
+        nvim_feedkeys('<escape>')
+        register_jump()
+    end
+)
+
+-- register a jump whenever a forward search is started
+vim.keymap.set({'n'}, '/',
     function()
         register_jump()
-        nvim_feedkeys('i')
+        nvim_feedkeys('/')
     end
 )
 ```
@@ -68,6 +77,10 @@ vim.keymap.set({'n'}, '<c-i>', jump_forw, {noremap=true})
 Happy jumping!
 
 ## Release Notes
+
+### 0.0.7
+
+- Improve end of jump list behavior
 
 ### 0.0.6
 
