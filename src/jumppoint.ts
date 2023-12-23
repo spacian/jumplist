@@ -4,9 +4,9 @@ export type NJumpPoint = JumpPoint | null;
 type NJumpPointNode = JumpPointNode | null;
 
 class JumpPointBaseNode {
-    prev: NJumpPointNode = null;
-    next: NJumpPointNode = null;
-    val: NJumpPoint = null;
+    public prev: NJumpPointNode = null;
+    public next: NJumpPointNode = null;
+    public val: NJumpPoint = null;
 
     public constructor(
         val?: JumpPoint,
@@ -37,7 +37,11 @@ class JumpPointBaseNode {
 }
 
 export class JumpPointNode extends JumpPointBaseNode {
-    public constructor(val: JumpPoint, prev: JumpPointNode, next: NJumpPointNode = null) {
+    public constructor(
+        val: JumpPoint,
+        prev: JumpPointNode,
+        next: NJumpPointNode = null,
+    ) {
         super(val, prev, next);
         return;
     }
@@ -50,10 +54,11 @@ export class JumpPointRoot extends JumpPointBaseNode {
 }
 
 export class JumpPoint {
-    private static combineLineCount: number = vscode.workspace.getConfiguration('jumplist').get('combineLineCount') as number;
-    row: number;
-    col: number;
-    doc: vscode.TextDocument;
+    private static combineLineCount: number =
+        vscode.workspace.getConfiguration('jumplist').get('combineLineCount') as number;
+    public row: number;
+    public col: number;
+    public doc: vscode.TextDocument;
 
     public constructor(row: number, col: number, doc: vscode.TextDocument) {
         this.row = row;
@@ -61,7 +66,7 @@ export class JumpPoint {
         this.doc = doc;
     }
 
-    public equals(other: JumpPoint | null): boolean {
+    public equals(other: NJumpPoint): boolean {
         return (
             other != null
             && Math.abs(this.row - other.row) <= JumpPoint.combineLineCount

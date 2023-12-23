@@ -12,7 +12,7 @@ export class JumpList {
         this.max = max;
         this.root = new JumpPointRoot();
         this.node = this.root;
-        this.insertJumpOnForward = insertJumpOnForward
+        this.insertJumpOnForward = insertJumpOnForward;
         return;
     }
 
@@ -23,10 +23,11 @@ export class JumpList {
             this.root.next = next.next;
             this.len -= 1;
         }
+        return;
     }
 
     private insertAfterCurrent(jumpPoint: JumpPoint): void {
-        const next = this.getJumpPointNode().next
+        const next = this.getJumpPointNode().next;
         this.getJumpPointNode().next =
             new JumpPointNode(jumpPoint, this.getJumpPointNode(), next);
         if (next != null) {
@@ -34,6 +35,7 @@ export class JumpList {
         }
         this.len += 1;
         this.goToNext();
+        return;
     }
 
     private getLength(): number {
@@ -41,11 +43,11 @@ export class JumpList {
     }
 
     private hasNext(): boolean {
-        return this.node.next != null;
+        return this.node.hasNext();
     }
 
     private hasPrevious(): boolean {
-        return this.node.prev != null && this.node.prev != this.root;
+        return this.node.hasPrev();
     }
 
     private goToNext(): void{
@@ -113,7 +115,8 @@ export class JumpList {
 
     public registerJump(jump: NJumpPoint): void {
         if (jump == null) {return;}
-        if (!this.amendJump(jump)) {
+        const didAmend = this.amendJump(jump);
+        if (!didAmend) {
             this.internalRegisterJump(jump);
         }
         return;
@@ -123,7 +126,7 @@ export class JumpList {
         if (jump != null) {
             const didAmend = this.amendJump(jump)
             if (!didAmend && this.insertJumpOnForward){
-                this.insertAfterCurrent(jump)
+                this.insertAfterCurrent(jump);
             }
         }
         this.goToNext();
