@@ -40,13 +40,14 @@ class JumpHandler implements vscode.Disposable {
     public registerJump(): void {
         const jumpPoint = this.getJumpPoint();
         if (jumpPoint != null){
-            this.jumpList.registerJump(jumpPoint);
+            this.jumpList.registerOrAmendJump(jumpPoint);
         }
         return;
     }
 
     public jumpForward(): void {
         const currentPoint = this.getJumpPoint();
+        if (currentPoint == null) {return;}
         const jumpPoint = this.jumpList.jumpForward(currentPoint);
         if (jumpPoint == null){return;}
         this.jumpTo(jumpPoint);
@@ -55,6 +56,7 @@ class JumpHandler implements vscode.Disposable {
 
     public jumpBack(): void {
         const currentPoint = this.getJumpPoint();
+        if (currentPoint == null) {return;}
         const jumpPoint = this.jumpList.jumpBack(currentPoint);
         if (jumpPoint == null){return;}
         this.jumpTo(jumpPoint);
