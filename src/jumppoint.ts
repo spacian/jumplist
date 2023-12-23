@@ -73,4 +73,11 @@ export class JumpPoint {
             && this.doc.fileName == other.doc.fileName
         );
     }
+    public equalsStrict(other: NJumpPoint): boolean {
+        return (
+            other != null
+            && this.row == other.row
+            && this.doc.fileName == other.doc.fileName
+        );
+    }
 }
