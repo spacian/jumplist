@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { JumpList } from './jumplist';
+import { JumpList } from './jump_list';
 import { JumpPoint, NJumpPoint } from './jump_point';
 import { JumpListUpdater } from './jump_list_updater';
 
