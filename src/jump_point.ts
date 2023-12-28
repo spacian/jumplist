@@ -34,6 +34,14 @@ class JumpPointBaseNode {
     public disconnectNext(): void {
         this.next = null;
     }
+
+    public delete(): void {
+        this.prev!.next = this.next;
+        if (this.next != null) {
+            this.next.prev = this.prev;
+        }
+        return;
+    }
 }
 
 export class JumpPointNode extends JumpPointBaseNode {
@@ -51,6 +59,7 @@ export class JumpPointRoot extends JumpPointBaseNode {
     public constructor() {
         super();
     }
+    public delete(): void {return;}
 }
 
 export class JumpPoint {
@@ -58,26 +67,26 @@ export class JumpPoint {
         vscode.workspace.getConfiguration('jumplist').get('combineLineCount') as number;
     public row: number;
     public col: number;
-    public doc: vscode.TextDocument;
+    public uri: vscode.Uri;
 
-    public constructor(row: number, col: number, doc: vscode.TextDocument) {
+    public constructor(row: number, col: number, uri: vscode.Uri) {
         this.row = row;
         this.col = col;
-        this.doc = doc;
+        this.uri = uri;
     }
 
     public equals(other: NJumpPoint): boolean {
         return (
             other != null
             && Math.abs(this.row - other.row) <= JumpPoint.combineLineCount
-            && this.doc.fileName == other.doc.fileName
+            && this.uri.path == other.uri.path
         );
     }
     public equalsStrict(other: NJumpPoint): boolean {
         return (
             other != null
             && this.row == other.row
-            && this.doc.fileName == other.doc.fileName
+            && this.uri.path == other.uri.path
         );
     }
 }

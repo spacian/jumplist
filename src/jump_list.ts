@@ -1,4 +1,4 @@
-import { JumpPoint, NJumpPoint, JumpPointRoot, JumpPointNode } from './jumppoint';
+import { JumpPoint, NJumpPoint, JumpPointRoot, JumpPointNode } from './jump_point';
 
 
 export class JumpList {
@@ -57,7 +57,7 @@ export class JumpList {
         return;
     }
 
-    private goToPrevious(): void {
+    public goToPrevious(): void {
         if (this.hasPrevious()) {
             this.node = this.node.prev!;
         }
@@ -147,5 +147,25 @@ export class JumpList {
 
     public getRoot(): JumpPointRoot {
         return this.root;
+    }
+
+    public getCurrent(): JumpPointNode {
+        return this.getJumpPointNode();
+    }
+
+    public deleteNode(node: JumpPointNode): void {
+        if (this.getRoot() == node) {return;}
+        if (this.getJumpPointNode() == node){
+            this.goToPrevious();
+        }
+        const prev = node.prev!;
+        node.delete();
+        if (prev != this.getRoot()
+            && prev.next != null
+            && prev.val!.equals(prev.next.val)
+        ) {
+            this.deleteNode(prev.next);
+        }
+        return;
     }
 }

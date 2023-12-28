@@ -78,6 +78,10 @@ Happy jumping!
 
 ## Release Notes
 
+### 0.0.8
+
+- Update jump points and jump list on file renames and deletions
+
 ### 0.0.7
 
 - Improve end of jump list behavior

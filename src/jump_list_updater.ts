@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
-import { JumpPoint } from './jumppoint';
-import { JumpList } from './jumplist';
+import { JumpPoint, JumpPointNode } from './jump_point';
+import { JumpList } from './jump_list';
 
 
 export class JumpListUpdater {
 
-    public static updateJumps(
+    public static updateJumpsTextDocumentChange(
         jumpList: JumpList,
         changeEvent: vscode.TextDocumentChangeEvent
     ): void {
@@ -13,16 +13,53 @@ export class JumpListUpdater {
         while (node.hasNext()) {
             node = node.next!;
             const jump = node.val!;
-            if (jump.doc === changeEvent.document) {
+            if (jump.uri.path === changeEvent.document.uri.path) {
                 for (const change of changeEvent.contentChanges) {
-                    JumpListUpdater.updateJump(jump, change);
+                    JumpListUpdater.updateJumpTextDocumentChange(jump, change);
                 }
             }
         }
         return;
     }
 
-    private static updateJump(
+    public static updateJumpsFileDeletion(
+        jumpList: JumpList,
+        deletionEvent: vscode.FileDeleteEvent
+    ): void {
+        let node = jumpList.getRoot() as JumpPointNode;
+        while (node.hasNext()) {
+            node = node.next!;
+            const nodePath = node.val!.uri.path;
+            for (const deletion of deletionEvent.files) {
+                if (nodePath == deletion.path){
+                    jumpList.deleteNode(node);
+                    break;
+                }
+            }
+        }
+        return;
+    }
+
+    public static async updateJumpsFileRename(
+        jumpList: JumpList,
+        renameEvent: vscode.FileRenameEvent
+    ): Promise<void> {
+        let node = jumpList.getRoot() as JumpPointNode;
+        while (node.hasNext()) {
+            node = node.next!;
+            const nodePath = node.val!.uri.path;
+            for (const rename of renameEvent.files) {
+                if (nodePath == rename.oldUri.path){
+                    console.log('renaming', nodePath);
+                    node.val!.uri = rename.newUri;
+                    break;
+                }
+            }
+        }
+        return;
+    }
+
+    private static updateJumpTextDocumentChange(
             jump: JumpPoint,
             event: vscode.TextDocumentContentChangeEvent,
     ): void {
