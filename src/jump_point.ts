@@ -79,14 +79,14 @@ export class JumpPoint {
         return (
             other != null
             && Math.abs(this.row - other.row) <= JumpPoint.combineLineCount
-            && this.uri.path == other.uri.path
+            && this.uri.path === other.uri.path
         );
     }
     public equalsStrict(other: NJumpPoint): boolean {
         return (
             other != null
-            && this.row == other.row
-            && this.uri.path == other.uri.path
+            && this.row === other.row
+            && this.uri.path === other.uri.path
         );
     }
 }

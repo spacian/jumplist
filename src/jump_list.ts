@@ -154,8 +154,8 @@ export class JumpList {
     }
 
     public deleteNode(node: JumpPointNode): void {
-        if (this.getRoot() == node) {return;}
-        if (this.getJumpPointNode() == node){
+        if (this.getRoot() === node) {return;}
+        if (this.getJumpPointNode() === node){
             this.goToPrevious();
         }
         const prev = node.prev!;

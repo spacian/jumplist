@@ -31,7 +31,7 @@ export class JumpListUpdater {
             node = node.next!;
             const nodePath = node.val!.uri.path;
             for (const deletion of deletionEvent.files) {
-                if (nodePath == deletion.path){
+                if (nodePath === deletion.path){
                     jumpList.deleteNode(node);
                     break;
                 }
@@ -49,8 +49,7 @@ export class JumpListUpdater {
             node = node.next!;
             const nodePath = node.val!.uri.path;
             for (const rename of renameEvent.files) {
-                if (nodePath == rename.oldUri.path){
-                    console.log('renaming', nodePath);
+                if (nodePath === rename.oldUri.path){
                     node.val!.uri = rename.newUri;
                     break;
                 }
