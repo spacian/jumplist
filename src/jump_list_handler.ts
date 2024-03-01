@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { JumpList } from './jump_list';
 import { JumpPoint, NJumpPoint } from './jump_point';
 import { JumpListUpdater } from './jump_list_updater';
+import { log } from 'console';
 
 
 class JumpHandler implements vscode.Disposable {
@@ -39,7 +40,7 @@ class JumpHandler implements vscode.Disposable {
 
     private getJumpPoint(): NJumpPoint {
         const editor = vscode.window.activeTextEditor;
-        if (editor != undefined) {
+        if (editor != undefined && editor.document.uri.scheme === "file") {
             const jumpPoint = new JumpPoint(
                 editor.selection.active.line,
                 editor.selection.active.character,
