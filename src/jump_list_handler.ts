@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import { JumpList } from './jump_list';
 import { JumpPoint, NJumpPoint } from './jump_point';
 import { JumpListUpdater } from './jump_list_updater';
-import { log } from 'console';
 
 
 class JumpHandler implements vscode.Disposable {
