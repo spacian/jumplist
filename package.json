@@ -3,7 +3,7 @@
   "displayName": "jumplist",
   "description": "Quickly jump from one point to another, imitating the neovim jump list.",
   "publisher": "spacian",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "repository": {"url": "https://github.com/spacian/jumplist"},
   "engines": {
     "vscode": "^1.85.0"

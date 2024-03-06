@@ -78,6 +78,10 @@ Happy jumping!
 
 ## Release Notes
 
+### 0.0.10
+
+- Enable jump point creation for all uris with a path
+
 ### 0.0.9
 
 - Prevent jump point creation on non-file uris

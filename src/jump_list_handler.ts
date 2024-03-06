@@ -39,7 +39,7 @@ class JumpHandler implements vscode.Disposable {
 
     private getJumpPoint(): NJumpPoint {
         const editor = vscode.window.activeTextEditor;
-        if (editor != undefined && editor.document.uri.scheme === "file") {
+        if (editor != undefined && editor.document.uri.path.length > 0) {
             const jumpPoint = new JumpPoint(
                 editor.selection.active.line,
                 editor.selection.active.character,
