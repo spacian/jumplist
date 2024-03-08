@@ -78,7 +78,8 @@ Since version 0.0.11, multiple jump lists can be managed. First, the correspondi
 setting ("Jump List Count") needs to be set to the corresponding value. Afterwards,
 additional commands are available: The first set of extra commands extends the existing
 commands with the number "1", the second with number "2" and so on. For example, with a
-jump list count of 2, the following commands will become available (after a reload):
+jump list count of 2, the following additional commands will become available (after a
+reload and despite not being listed in the extension shortcuts):
 
 ```
 jumplist.jumpForward1
@@ -86,7 +87,9 @@ jumplist.jumpBackwards1
 jumplist.registerJump1
 ```
 
-They are different in that they won't register jumps automatically at all (in contrast to the default jump list, which does so occasionally for convenience reasons). This is to give you full control over which entries will be added to these lists.
+They are different in that they won't register jumps automatically at all (in contrast
+to the default jump list, which does so occasionally for convenience reasons). This is
+to give you full control over which entries will be added to these lists.
 
 Happy jumping!
 
