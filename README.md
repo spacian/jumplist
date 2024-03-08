@@ -78,6 +78,10 @@ Happy jumping!
 
 ## Release Notes
 
+### 0.0.11
+
+- Enable use of multiple parallel jump lists
+
 ### 0.0.10
 
 - Enable jump point creation for all uris with a path

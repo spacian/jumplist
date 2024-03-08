@@ -5,7 +5,7 @@ import { JumpListUpdater } from './jump_list_updater';
 
 
 class JumpHandler implements vscode.Disposable {
-    private jumpList: JumpList;
+    private jumpLists: JumpList[] = [];
     private textDocumentChangeListener: vscode.Disposable | null = null;
     private fileRenameListener: vscode.Disposable | null = null;
     private fileDeletionListener: vscode.Disposable | null = null;
@@ -19,20 +19,32 @@ class JumpHandler implements vscode.Disposable {
                                 vscode.workspace
                                 .getConfiguration('jumplist')
                                 .get('insertJumpPointOnForwardJump') as boolean;
-        this.jumpList = new JumpList(maxSize, insertOnJumpForward);
+        const jumpListCount: number =
+                                vscode.workspace
+                                .getConfiguration('jumplist')
+                                .get('jumpListCount') as number;
+        for (let i = 0; i < jumpListCount; i++){
+            this.jumpLists.push(new JumpList(maxSize, insertOnJumpForward));
+        }
         this.textDocumentChangeListener =
             vscode.workspace.onDidChangeTextDocument((change) => {
-                JumpListUpdater.updateJumpsTextDocumentChange(this.jumpList, change);
+                for (const jumpList of this.jumpLists){
+                    JumpListUpdater.updateJumpsTextDocumentChange(jumpList, change);
+                }
             }
         );
         this.fileRenameListener =
             vscode.workspace.onDidRenameFiles((rename) => {
-                JumpListUpdater.updateJumpsFileRename(this.jumpList, rename);
+                for (const jumpList of this.jumpLists) {
+                    JumpListUpdater.updateJumpsFileRename(jumpList, rename);
+                }
             }
         );
         this.fileDeletionListener =
             vscode.workspace.onDidDeleteFiles((deletion) => {
-                JumpListUpdater.updateJumpsFileDeletion(this.jumpList, deletion);
+                for (const jumpList of this.jumpLists) {
+                    JumpListUpdater.updateJumpsFileDeletion(jumpList, deletion);
+                }
             }
         );
     }
@@ -49,27 +61,36 @@ class JumpHandler implements vscode.Disposable {
         return null;
     }
 
-    public registerJump(): void {
+    public registerJump(jumpListId: number): void {
+        if (jumpListId >= this.jumpLists.length) {
+            return;
+        }
         const jumpPoint = this.getJumpPoint();
         if (jumpPoint != null){
-            this.jumpList.registerOrAmendJump(jumpPoint);
+            this.jumpLists[jumpListId].registerOrAmendJump(jumpPoint);
         }
         return;
     }
 
-    public jumpForward(): void {
+    public jumpForward(jumpListId: number): void {
+        if (jumpListId >= this.jumpLists.length) {
+            return;
+        }
         const currentPoint = this.getJumpPoint();
         if (currentPoint === null) {return;}
-        const jumpPoint = this.jumpList.jumpForward(currentPoint);
+        const jumpPoint = this.jumpLists[jumpListId].jumpForward(currentPoint);
         if (jumpPoint === null){return;}
         this.jumpTo(jumpPoint);
         return;
     }
 
-    public jumpBack(): void {
+    public jumpBack(jumpListId: number): void {
+        if (jumpListId >= this.jumpLists.length) {
+            return;
+        }
         const currentPoint = this.getJumpPoint();
         if (currentPoint === null) {return;}
-        const jumpPoint = this.jumpList.jumpBack(currentPoint);
+        const jumpPoint = this.jumpLists[jumpListId].jumpBack(currentPoint);
         if (jumpPoint === null){return;}
         this.jumpTo(jumpPoint);
     }
@@ -117,20 +138,20 @@ function getJumpHandler(context: vscode.ExtensionContext): JumpHandler {
     return jumpHandler;
 }
 
-export function registerJump(context: vscode.ExtensionContext): void {
+export function registerJump(context: vscode.ExtensionContext, jumpListId: number): void {
     const handler = getJumpHandler(context);
-    handler.registerJump();
+    handler.registerJump(jumpListId);
     return;
 }
 
-export function jumpForward(context: vscode.ExtensionContext): void {
+export function jumpForward(context: vscode.ExtensionContext, jumpListId: number): void {
     const handler = getJumpHandler(context);
-    handler.jumpForward();
+    handler.jumpForward(jumpListId);
     return;
 }
 
-export function jumpBack(context: vscode.ExtensionContext): void {
+export function jumpBack(context: vscode.ExtensionContext, jumpListId: number): void {
     const handler = getJumpHandler(context);
-    handler.jumpBack();
+    handler.jumpBack(jumpListId);
     return;
 }
