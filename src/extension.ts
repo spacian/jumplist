@@ -1,43 +1,41 @@
 import * as vscode from 'vscode';
-import { registerJump, jumpForward, jumpBack } from './jump_list_handler';
+import { registerJump, jumpForward, jumpBack } from './handler_singleton';
 
-export function activate(context: vscode.ExtensionContext) {
-    const jumpListCount: number =
-                            vscode.workspace
-                            .getConfiguration('jumplist')
-                            .get('jumpListCount') as number;
-    for (let i = 0; i < jumpListCount; i++){
-        let registerJumpString  = "jumplist.registerJump"
-        if (i > 0) {
-            registerJumpString = registerJumpString.concat(i.toString());
-        }
-        const registerJumpDisposable = vscode.commands.registerCommand(
-            registerJumpString, () => {
-                registerJump(context, i);
-            }
-        );
-        let jumpForwardString  = "jumplist.jumpForward"
-        if (i > 0) {
-            jumpForwardString = jumpForwardString.concat(i.toString());
-        }
-        const jumpForwardDisposable = vscode.commands.registerCommand(
-            jumpForwardString, () => {
-                jumpForward(context, i);
-            }
-        );
-        let jumpBackString  = "jumplist.jumpBack"
-        if (i > 0) {
-            jumpBackString = jumpBackString.concat(i.toString());
-        }
-        const jumpBackDisposable = vscode.commands.registerCommand(
-            jumpBackString, () => {
-                jumpBack(context, i);
-            }
-        );
-        context.subscriptions.push(registerJumpDisposable);
-        context.subscriptions.push(jumpForwardDisposable);
-        context.subscriptions.push(jumpBackDisposable);
+function getCommand(name: string, i: number) : string {
+    if (i > 0) {
+        return name.concat(i.toString());
     }
+    return name;
 }
 
-export function deactivate() {}
+export function activate(context: vscode.ExtensionContext) : void {
+    const jumpListCount: number =
+                                vscode.workspace
+                                .getConfiguration('jumplist')
+                                .get('jumpListCount') as number;
+
+    for (let i = 0; i < jumpListCount; i++) {
+        const registerJumpString  = getCommand("jumplist.registerJump", i);
+        const registerJumpDisposable = vscode.commands.registerCommand(
+            registerJumpString, () => { registerJump(context, i); }
+        );
+        context.subscriptions.push(registerJumpDisposable);
+
+        const jumpForwardString  = getCommand("jumplist.jumpForward", i);
+        const jumpForwardDisposable = vscode.commands.registerCommand(
+            jumpForwardString, () => { jumpForward(context, i); }
+        );
+        context.subscriptions.push(jumpForwardDisposable);
+
+        const jumpBackString  = getCommand("jumplist.jumpBack", i);
+        const jumpBackDisposable = vscode.commands.registerCommand(
+            jumpBackString, () => { jumpBack(context, i); }
+        );
+        context.subscriptions.push(jumpBackDisposable);
+    }
+    return;
+}
+
+export function deactivate() : void {
+    return;
+}

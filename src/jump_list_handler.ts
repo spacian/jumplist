@@ -4,7 +4,7 @@ import { JumpPoint, NJumpPoint } from './jump_point';
 import { JumpListUpdater } from './jump_list_updater';
 
 
-class JumpHandler implements vscode.Disposable {
+export class JumpHandler implements vscode.Disposable {
     private jumpLists: JumpList[] = [];
     private textDocumentChangeListener: vscode.Disposable | null = null;
     private fileRenameListener: vscode.Disposable | null = null;
@@ -78,7 +78,8 @@ class JumpHandler implements vscode.Disposable {
         }
         const currentPoint = this.getJumpPoint();
         if (currentPoint === null) {return;}
-        const jumpPoint = this.jumpLists[jumpListId].jumpForward(currentPoint);
+        const insert =  jumpListId === 0;
+        const jumpPoint = this.jumpLists[jumpListId].jumpForward(currentPoint, insert);
         if (jumpPoint === null){return;}
         this.jumpTo(jumpPoint);
         return;
@@ -90,7 +91,8 @@ class JumpHandler implements vscode.Disposable {
         }
         const currentPoint = this.getJumpPoint();
         if (currentPoint === null) {return;}
-        const jumpPoint = this.jumpLists[jumpListId].jumpBack(currentPoint);
+        const insert =  jumpListId === 0;
+        const jumpPoint = this.jumpLists[jumpListId].jumpBack(currentPoint, insert);
         if (jumpPoint === null){return;}
         this.jumpTo(jumpPoint);
     }
@@ -111,47 +113,17 @@ class JumpHandler implements vscode.Disposable {
         return;
     }
 
-    private jumpTo(jump: JumpPoint): void {
+    private async jumpTo(jump: JumpPoint): Promise<void> {
         if (jump.uri != null) {
-            vscode.window.showTextDocument(jump.uri);
-            if (vscode.window.activeTextEditor
-                && vscode.window.activeTextEditor.document.uri.path === jump.uri.path
+            let editor = await vscode.window.showTextDocument(jump.uri);
+            if (editor.document.uri.path === jump.uri.path
             ) {
                 const jumpPosition = new vscode.Position(jump.row, jump.col);
                 const selection = new vscode.Selection(jumpPosition, jumpPosition);
-                vscode.window.activeTextEditor.selection = selection;
-                vscode.window.activeTextEditor.revealRange(
-                    selection, vscode.TextEditorRevealType.InCenter
-                );
+                editor.selection = selection;
+                editor.revealRange(selection, vscode.TextEditorRevealType.InCenter);
             }
         }
         return;
     }
-}
-
-let jumpHandler: JumpHandler | null = null;
-function getJumpHandler(context: vscode.ExtensionContext): JumpHandler {
-    if (jumpHandler === null) {
-        jumpHandler = new JumpHandler();
-        context.subscriptions.push(jumpHandler);
-    }
-    return jumpHandler;
-}
-
-export function registerJump(context: vscode.ExtensionContext, jumpListId: number): void {
-    const handler = getJumpHandler(context);
-    handler.registerJump(jumpListId);
-    return;
-}
-
-export function jumpForward(context: vscode.ExtensionContext, jumpListId: number): void {
-    const handler = getJumpHandler(context);
-    handler.jumpForward(jumpListId);
-    return;
-}
-
-export function jumpBack(context: vscode.ExtensionContext, jumpListId: number): void {
-    const handler = getJumpHandler(context);
-    handler.jumpBack(jumpListId);
-    return;
 }

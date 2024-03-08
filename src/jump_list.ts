@@ -103,9 +103,6 @@ export class JumpList {
     }
 
     private internalRegisterJump(jump: JumpPoint): void {
-        if (jump.equals(this.getJumpPoint())) {
-            this.goToPrevious();
-        }
         this.deleteAfterCurrent();
         this.insertAfterCurrent(jump);
         this.limitSize();
@@ -120,19 +117,19 @@ export class JumpList {
         return;
     }
 
-    public jumpForward(jump: JumpPoint): NJumpPoint {
+    public jumpForward(jump: JumpPoint, insert: boolean): NJumpPoint {
         if (!this.hasNext()) {
             return null;
         }
         const didAmend = this.amendJump(jump)
-        if (!didAmend && this.insertJumpOnForward){
+        if (insert && !didAmend && this.insertJumpOnForward){
             this.insertAfterCurrent(jump);
         }
         this.goToNext();
         return this.getNJumpPoint();
     }
 
-    public jumpBack(jump: JumpPoint): NJumpPoint {
+    public jumpBack(jump: JumpPoint, insert: boolean): NJumpPoint {
         if (jump.equalsStrict(this.getNJumpPoint())){
             this.goToPrevious();
             return this.getNJumpPoint();
@@ -140,8 +137,10 @@ export class JumpList {
         else if (jump.equals(this.getNJumpPoint())){
             return this.getNJumpPoint();
         }
-        this.internalRegisterJump(jump);
-        this.goToPrevious();
+        if (insert) {
+            this.internalRegisterJump(jump);
+            this.goToPrevious();
+        }
         return this.getNJumpPoint();
     }
 
