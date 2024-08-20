@@ -47,6 +47,7 @@ export class JumpHandler implements vscode.Disposable {
                 }
             }
         );
+        return;
     }
 
     private getJumpPoint(): NJumpPoint {
@@ -78,7 +79,7 @@ export class JumpHandler implements vscode.Disposable {
         }
         const currentPoint = this.getJumpPoint();
         if (currentPoint === null) {return;}
-        const insert =  jumpListId === 0;
+        const insert = (jumpListId === 0);
         const jumpPoint = this.jumpLists[jumpListId].jumpForward(currentPoint, insert);
         if (jumpPoint === null){return;}
         this.jumpTo(jumpPoint);
@@ -91,10 +92,11 @@ export class JumpHandler implements vscode.Disposable {
         }
         const currentPoint = this.getJumpPoint();
         if (currentPoint === null) {return;}
-        const insert =  jumpListId === 0;
+        const insert = (jumpListId === 0);
         const jumpPoint = this.jumpLists[jumpListId].jumpBack(currentPoint, insert);
         if (jumpPoint === null){return;}
         this.jumpTo(jumpPoint);
+        return;
     }
 
     public dispose(): void {

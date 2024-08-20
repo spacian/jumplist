@@ -42,6 +42,10 @@ class JumpPointBaseNode {
         }
         return;
     }
+
+    public isRoot(): boolean {
+        return !this.valid();
+    }
 }
 
 export class JumpPointNode extends JumpPointBaseNode {
@@ -79,14 +83,23 @@ export class JumpPoint {
         return (
             other != null
             && Math.abs(this.row - other.row) <= JumpPoint.combineLineCount
-            && this.uri.path === other.uri.path
+            && this.uri.fsPath === other.uri.fsPath
         );
     }
     public equalsStrict(other: NJumpPoint): boolean {
         return (
             other != null
-            && this.row === other.row
-            && this.uri.path === other.uri.path
+            && this.row - other.row === 0
+            && this.uri.fsPath === other.uri.fsPath
         );
+    }
+
+    public update(row: number, col: number, uri?: vscode.Uri) {
+        this.row = row;
+        this.col = col;
+        if (uri != undefined) {
+            this.uri = uri;
+        }
+        return;
     }
 }

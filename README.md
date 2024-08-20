@@ -95,6 +95,10 @@ Happy jumping!
 
 ## Release Notes
 
+### 0.0.12
+
+- Fix a bug that cut the history when going backwards on root
+
 ### 0.0.11
 
 - Enable use of multiple parallel jump lists

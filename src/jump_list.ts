@@ -34,7 +34,6 @@ export class JumpList {
             next.prev = this.getJumpPointNode().next
         }
         this.len += 1;
-        this.goToNext();
         return;
     }
 
@@ -95,8 +94,7 @@ export class JumpList {
 
     private amendJump(jump: JumpPoint): boolean {
         if (jump.equals(this.getNJumpPoint())) {
-            this.getJumpPoint().col = jump.col;
-            this.getJumpPoint().row = jump.row;
+            this.getJumpPoint().update(jump.row, jump.col);
             return true;
         }
         return false;
@@ -113,6 +111,7 @@ export class JumpList {
         const didAmend = this.amendJump(jump);
         if (!didAmend) {
             this.internalRegisterJump(jump);
+            this.goToNext();
         }
         return;
     }
@@ -124,13 +123,26 @@ export class JumpList {
         const didAmend = this.amendJump(jump)
         if (insert && !didAmend && this.insertJumpOnForward){
             this.insertAfterCurrent(jump);
+            this.goToNext();
         }
         this.goToNext();
         return this.getNJumpPoint();
     }
 
     public jumpBack(jump: JumpPoint, insert: boolean): NJumpPoint {
-        if (jump.equalsStrict(this.getNJumpPoint())){
+        if (this.getCurrent().isRoot()) {
+            this.internalRegisterJump(jump);
+            this.goToNext();
+            return this.getNJumpPoint();
+        }
+        else if (this.getCurrent().prev!.isRoot()) {
+            const didAmend = this.amendJump(jump);
+            if (!didAmend) {
+                this.internalRegisterJump(jump);
+            }
+            return this.getNJumpPoint();
+        }
+        else if (jump.equalsStrict(this.getNJumpPoint())){
             this.goToPrevious();
             return this.getNJumpPoint();
         }
@@ -138,8 +150,10 @@ export class JumpList {
             return this.getNJumpPoint();
         }
         if (insert) {
-            this.internalRegisterJump(jump);
-            this.goToPrevious();
+            const didAmend = this.amendJump(jump);
+            if (!didAmend) {
+                this.internalRegisterJump(jump);
+            }
         }
         return this.getNJumpPoint();
     }
