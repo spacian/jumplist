@@ -1,17 +1,17 @@
 import * as vscode from "vscode";
 
 export type NJumpPoint = JumpPoint | null;
-type NJumpPointNode = JumpPointNode | null;
+type NJumpPointBaseNode = JumpPointNode | null;
 
 class JumpPointBaseNode {
-    public prev: NJumpPointNode = null;
-    public next: NJumpPointNode = null;
+    private prev: NJumpPointBaseNode = null;
+    private next: NJumpPointBaseNode = null;
     public val: NJumpPoint = null;
 
     public constructor(
         val?: JumpPoint,
-        prev?: NJumpPointNode,
-        next?: NJumpPointNode,
+        prev?: JumpPointBaseNode,
+        next?: JumpPointBaseNode,
     ) {
         if (val != undefined) {this.val = val;}
         if (prev != undefined) {this.prev = prev;}
@@ -20,39 +20,54 @@ class JumpPointBaseNode {
     }
 
     public valid(): boolean {
-        return this.val != null;
+        return !this.isRoot() && this.prev != null && this.next != null;
     }
 
     public hasPrev(): boolean {
-        return this.prev != null && this.prev.valid();
+        return !this.prev!.isRoot();
     }
 
     public hasNext(): boolean {
-        return this.next != null;
+        return !this.next!.isRoot();
     }
 
-    public disconnectNext(): void {
-        this.next = null;
+    public getPrev(): JumpPointBaseNode {
+        return this.prev!;
+    }
+
+    public getNext(): JumpPointBaseNode {
+        return this.next!;
+    }
+
+    public setNext(node: JumpPointBaseNode): void {
+        this.next = node;
+        return;
+    }
+
+    public setPrev(node: JumpPointBaseNode): void {
+        this.prev = node;
+        return;
     }
 
     public delete(): void {
         this.prev!.next = this.next;
-        if (this.next != null) {
-            this.next.prev = this.prev;
-        }
+        this.next!.prev = this.prev;
+        this.prev = null;
+        this.next = null;
+        this.val = null;
         return;
     }
 
     public isRoot(): boolean {
-        return !this.valid();
+        return this.val === null;
     }
 }
 
 export class JumpPointNode extends JumpPointBaseNode {
     public constructor(
         val: JumpPoint,
-        prev: JumpPointNode,
-        next: NJumpPointNode = null,
+        prev: JumpPointBaseNode,
+        next: JumpPointBaseNode,
     ) {
         super(val, prev, next);
         return;
@@ -62,7 +77,11 @@ export class JumpPointNode extends JumpPointBaseNode {
 export class JumpPointRoot extends JumpPointBaseNode {
     public constructor() {
         super();
+        this.setPrev(this);
+        this.setNext(this);
+        return;
     }
+
     public delete(): void {return;}
 }
 
@@ -86,6 +105,7 @@ export class JumpPoint {
             && this.uri.fsPath === other.uri.fsPath
         );
     }
+
     public equalsStrict(other: NJumpPoint): boolean {
         return (
             other != null

@@ -11,7 +11,7 @@ export class JumpListUpdater {
     ): void {
         let node = jumpList.getRoot();
         while (node.hasNext()) {
-            node = node.next!;
+            node = node.getNext();
             const jump = node.val!;
             if (jump.uri.path === changeEvent.document.uri.path) {
                 for (const change of changeEvent.contentChanges) {
@@ -28,7 +28,7 @@ export class JumpListUpdater {
     ): void {
         let node = jumpList.getRoot() as JumpPointNode;
         while (node.hasNext()) {
-            node = node.next!;
+            node = node.getNext();
             const nodePath = node.val!.uri.path;
             for (const deletion of deletionEvent.files) {
                 if (nodePath === deletion.path){
@@ -46,7 +46,7 @@ export class JumpListUpdater {
     ): Promise<void> {
         let node = jumpList.getRoot() as JumpPointNode;
         while (node.hasNext()) {
-            node = node.next!;
+            node = node.getNext();
             const nodePath = node.val!.uri.path;
             for (const rename of renameEvent.files) {
                 if (nodePath === rename.oldUri.path){

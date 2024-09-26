@@ -95,6 +95,10 @@ Happy jumping!
 
 ## Release Notes
 
+### 0.0.13
+
+- Insert new jump point when trying to jump backwards at the start of the jump list
+
 ### 0.0.12
 
 - Fix a bug that cut the history when going backwards on root
